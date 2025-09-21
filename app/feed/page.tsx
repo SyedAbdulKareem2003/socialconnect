@@ -4,8 +4,22 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import PostCard from '@/components/PostCard'
 
+// Minimal post type for feed
+type FeedPost = {
+  id: string
+  author_id: string
+  content: string
+  image_url?: string
+  category?: string
+  created_at?: string
+  profiles?: { username?: string; avatar_url?: string }
+  author_username?: string
+  author_avatar?: string
+  [key: string]: any // for any extra fields
+}
+
 export default function FeedPage() {
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<FeedPost[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -19,7 +33,7 @@ export default function FeedPage() {
         .select('following')
         .eq('follower', user.id)
 
-      const followingIds = following ? following.map((f: any) => f.following) : []
+      const followingIds = following ? following.map((f: { following: string }) => f.following) : []
       followingIds.push(user.id) // include own posts
 
       // Fetch posts from followed users + self
@@ -33,7 +47,7 @@ export default function FeedPage() {
 
       if (error) {
         console.error(error)
-      } else {
+      } else if (data) {
         setPosts(
           data.map((post: any) => ({
             ...post,

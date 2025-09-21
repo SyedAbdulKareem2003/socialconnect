@@ -2,9 +2,17 @@
 
 import { useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
-import { User, MapPin, FileText, Camera, Save, CheckCircle, AlertCircle, Loader2, Upload, X } from 'lucide-react'
+import { User, MapPin, FileText, Camera, Save, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react'
 
-export default function ProfileForm({ profile, onProfileUpdated }: { profile: any, onProfileUpdated: () => void }) {
+type ProfileType = {
+  username: string
+  bio?: string
+  location?: string
+  avatar_url?: string
+  [key: string]: any
+}
+
+export default function ProfileForm({ profile, onProfileUpdated }: { profile: ProfileType, onProfileUpdated: () => void }) {
   const [username, setUsername] = useState(profile?.username || '')
   const [bio, setBio] = useState(profile?.bio || '')
   const [location, setLocation] = useState(profile?.location || '')

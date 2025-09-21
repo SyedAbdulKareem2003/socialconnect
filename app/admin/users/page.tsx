@@ -4,26 +4,39 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Users, User, Trash2, Search, Filter, Calendar, MapPin, Loader2, AlertTriangle, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
+
+type UserProfile = {
+  id: string
+  username?: string
+  bio?: string
+  location?: string
+  avatar_url?: string
+  created_at: string
+}
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<any[]>([])
+  const [users, setUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([])
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchUsers() {
-      const { data } = await supabase.from('profiles').select('*').order('created_at', { ascending: false })
-      setUsers(data || [])
-      setFilteredUsers(data || [])
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
+      setUsers((data as UserProfile[]) || [])
+      setFilteredUsers((data as UserProfile[]) || [])
       setLoading(false)
     }
     fetchUsers()
   }, [])
 
   useEffect(() => {
-    const filtered = users.filter(user =>
+    const filtered = users.filter((user) =>
       user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.bio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.location?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -33,12 +46,12 @@ export default function AdminUsersPage() {
 
   async function handleDeleteUser(userId: string) {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return
-    
+
     setDeleteLoading(userId)
     try {
       await supabase.from('profiles').delete().eq('id', userId)
-      setUsers(users => users.filter(u => u.id !== userId))
-      setFilteredUsers(filtered => filtered.filter(u => u.id !== userId))
+      setUsers((users) => users.filter((u) => u.id !== userId))
+      setFilteredUsers((filtered) => filtered.filter((u) => u.id !== userId))
     } catch (error) {
       alert('Failed to delete user')
     } finally {
@@ -50,7 +63,7 @@ export default function AdminUsersPage() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
@@ -76,7 +89,7 @@ export default function AdminUsersPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link 
+            <Link
               href="/admin"
               className="p-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-xl transition-all duration-300 text-gray-400 hover:text-white"
             >
@@ -90,7 +103,7 @@ export default function AdminUsersPage() {
               <p className="text-gray-400">Manage all registered users</p>
             </div>
           </div>
-          
+
           <div className="text-right">
             <div className="text-2xl font-bold text-white">{filteredUsers.length}</div>
             <div className="text-sm text-gray-400">Total Users</div>
@@ -111,7 +124,7 @@ export default function AdminUsersPage() {
                 className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 rounded-xl text-white placeholder-gray-400 transition-all duration-300 focus:bg-white/10"
               />
             </div>
-            
+
             {/* Filter Button */}
             <button className="flex items-center space-x-2 px-4 py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-xl transition-all duration-300 text-white">
               <Filter size={18} />
@@ -135,20 +148,19 @@ export default function AdminUsersPage() {
           ) : (
             <div className="divide-y divide-white/10">
               {filteredUsers.map((user, index) => (
-                <div 
-                  key={user.id} 
-                  className="p-6 hover:bg-white/5 transition-colors duration-300 group"
-                >
+                <div key={user.id} className="p-6 hover:bg-white/5 transition-colors duration-300 group">
                   <div className="flex items-center justify-between">
                     {/* User Info */}
                     <div className="flex items-center space-x-4 flex-1">
                       {/* Avatar */}
                       <div className="flex-shrink-0">
                         {user.avatar_url ? (
-                          <img 
-                            src={user.avatar_url} 
-                            alt="User avatar" 
-                            className="w-12 h-12 rounded-full object-cover border-2 border-white/10 group-hover:border-white/20 transition-colors duration-300" 
+                          <Image
+                            src={user.avatar_url}
+                            alt="User avatar"
+                            width={48}
+                            height={48}
+                            className="w-12 h-12 rounded-full object-cover border-2 border-white/10 group-hover:border-white/20 transition-colors duration-300"
                           />
                         ) : (
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full flex items-center justify-center border-2 border-white/10 group-hover:border-white/20 transition-colors duration-300">
@@ -165,14 +177,12 @@ export default function AdminUsersPage() {
                           </h3>
                           <span className="text-xs text-gray-500">#{index + 1}</span>
                         </div>
-                        
+
                         <div className="space-y-1">
                           {user.bio && (
-                            <p className="text-sm text-gray-300 line-clamp-1">
-                              {user.bio}
-                            </p>
+                            <p className="text-sm text-gray-300 line-clamp-1">{user.bio}</p>
                           )}
-                          
+
                           <div className="flex items-center space-x-4 text-xs text-gray-400">
                             {user.location && (
                               <div className="flex items-center space-x-1">
@@ -180,7 +190,7 @@ export default function AdminUsersPage() {
                                 <span>{user.location}</span>
                               </div>
                             )}
-                            
+
                             <div className="flex items-center space-x-1">
                               <Calendar size={12} />
                               <span>Joined {formatDate(user.created_at)}</span>
@@ -219,8 +229,7 @@ export default function AdminUsersPage() {
             <div>
               <h4 className="font-semibold text-red-400 mb-1">Deletion Warning</h4>
               <p className="text-red-300 text-sm">
-                Deleting a user will permanently remove their account, posts, and all associated data. 
-                This action cannot be undone.
+                Deleting a user will permanently remove their account, posts, and all associated data. This action cannot be undone.
               </p>
             </div>
           </div>

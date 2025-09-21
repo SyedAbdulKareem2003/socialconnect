@@ -4,9 +4,13 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
+type NotificationType = {
+  id: string
+  [key: string]: any
+}
+
 export default function NotificationsBell() {
   const [count, setCount] = useState(0)
-  const [notifications, setNotifications] = useState<any[]>([])
 
   useEffect(() => {
     let channel: any
@@ -16,12 +20,11 @@ export default function NotificationsBell() {
       // Fetch unread notifications
       const { data } = await supabase
         .from('notifications')
-        .select('*')
+        .select('id')
         .eq('recipient_id', user.id)
         .eq('is_read', false)
         .order('created_at', { ascending: false })
         .limit(20)
-      setNotifications(data || [])
       setCount((data || []).length)
 
       // Subscribe to real-time notifications
@@ -31,7 +34,6 @@ export default function NotificationsBell() {
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'notifications', filter: `recipient_id=eq.${user.id}` },
           payload => {
-            setNotifications(prev => [payload.new, ...prev])
             setCount(c => c + 1)
           }
         )

@@ -3,11 +3,19 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import Link from 'next/link'
+
+type ProfileType = {
+  id: string
+  username: string
+  bio?: string
+  avatar_url?: string
+  location?: string
+  [key: string]: any
+}
 
 export default function UserProfilePage() {
   const { username } = useParams()
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<ProfileType | null>(null)
   const [isFollowing, setIsFollowing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({ followers: 0, following: 0, posts: 0 })
@@ -57,27 +65,27 @@ export default function UserProfilePage() {
   }, [username])
 
   async function handleFollow() {
-  if (!profile || !currentUserId) return
-  // Try to insert follow
-  const { error: followError } = await supabase.from('follows').insert({ follower: currentUserId, following: profile.id })
-  if (followError) {
-    alert('Could not follow user: ' + followError.message)
-    return
-  }
-  setIsFollowing(true)
-  setStats(s => ({ ...s, followers: s.followers + 1 }))
+    if (!profile || !currentUserId) return
+    // Try to insert follow
+    const { error: followError } = await supabase.from('follows').insert({ follower: currentUserId, following: profile.id })
+    if (followError) {
+      // Optionally handle error
+      return
+    }
+    setIsFollowing(true)
+    setStats(s => ({ ...s, followers: s.followers + 1 }))
 
-  // Insert notification for the followed user (only if follow succeeded)
-  const { error: notifError } = await supabase.from('notifications').insert({
-    recipient_id: profile.id,
-    sender_id: currentUserId,
-    notification_type: 'follow',
-    message: 'started following you',
-  })
-  if (notifError) {
-    alert('Could not send notification: ' + notifError.message)
+    // Insert notification for the followed user (only if follow succeeded)
+    const { error: notifError } = await supabase.from('notifications').insert({
+      recipient_id: profile.id,
+      sender_id: currentUserId,
+      notification_type: 'follow',
+      message: 'started following you',
+    })
+    if (notifError) {
+      // Optionally handle error
+    }
   }
-}
 
   async function handleUnfollow() {
     if (!profile || !currentUserId) return

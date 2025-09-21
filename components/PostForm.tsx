@@ -4,7 +4,11 @@ import { useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Camera, Image, Send, AlertCircle, X, Loader2, Sparkles, Hash } from 'lucide-react'
 
-export default function PostForm({ onPostCreated }: { onPostCreated: () => void }) {
+type PostFormProps = {
+  onPostCreated: () => void
+}
+
+export default function PostForm({ onPostCreated }: PostFormProps) {
   const [content, setContent] = useState('')
   const [category, setCategory] = useState('general')
   const [imageUrl, setImageUrl] = useState('')

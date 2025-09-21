@@ -5,8 +5,21 @@ import { supabase } from '@/lib/supabase'
 import { Heart, MessageCircle, UserPlus, Bell, Check, User, Eye } from 'lucide-react'
 import Link from 'next/link'
 
+type NotificationType = {
+  id: string
+  recipient_id: string
+  sender_id: string
+  notification_type: string
+  post_id?: string
+  message: string
+  is_read: boolean
+  created_at: string
+  profiles?: { username?: string; avatar_url?: string }
+  [key: string]: any
+}
+
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<any[]>([])
+  const [notifications, setNotifications] = useState<NotificationType[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -124,7 +137,7 @@ export default function NotificationsPage() {
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">No notifications yet</h3>
             <p className="text-gray-400 max-w-sm mx-auto">
-              When someone likes your posts or follows you, you'll see their activity here.
+              When someone likes your posts or follows you, you&apos;ll see their activity here.
             </p>
           </div>
         )}

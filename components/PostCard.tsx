@@ -5,7 +5,22 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, User } from 'lucide-react'
 
-export default function PostCard({ post }: { post: any }) {
+type PostType = {
+  id: string
+  author_id: string
+  author_username?: string
+  author_avatar?: string
+  content: string
+  image_url?: string
+  category?: string
+  created_at?: string
+  like_count?: number
+  comment_count?: number
+  profiles?: { username?: string; avatar_url?: string }
+  [key: string]: any
+}
+
+export default function PostCard({ post }: { post: PostType }) {
   const [liked, setLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(post.like_count || 0)
   const [commentCount, setCommentCount] = useState(post.comment_count || 0)
@@ -68,7 +83,7 @@ export default function PostCard({ post }: { post: any }) {
           message: 'liked your post',
         })
         if (notifError) {
-          
+          // Optionally handle notification error
         }
       }
     }
@@ -113,7 +128,7 @@ export default function PostCard({ post }: { post: any }) {
                 {post.category}
               </span>
               <span>•</span>
-              <span>{formatTimeAgo(post.created_at)}</span>
+              <span>{formatTimeAgo(post.created_at || '')}</span>
             </div>
           </div>
         </div>

@@ -6,10 +6,30 @@ import { supabase } from '@/lib/supabase'
 import { MessageCircle, Send, User, Calendar, ArrowLeft, Loader2, AlertCircle, Heart, Share2 } from 'lucide-react'
 import Link from 'next/link'
 
+type PostType = {
+  id: string
+  author_id: string
+  content: string
+  image_url?: string
+  category?: string
+  created_at?: string
+  profiles?: { username?: string; avatar_url?: string }
+  [key: string]: any
+}
+
+type CommentType = {
+  id: string
+  author_id: string
+  content: string
+  created_at: string
+  profiles?: { username?: string; avatar_url?: string }
+  [key: string]: any
+}
+
 export default function PostPage() {
   const { postId } = useParams()
-  const [post, setPost] = useState<any>(null)
-  const [comments, setComments] = useState<any[]>([])
+  const [post, setPost] = useState<PostType | null>(null)
+  const [comments, setComments] = useState<CommentType[]>([])
   const [comment, setComment] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -74,7 +94,7 @@ export default function PostPage() {
         message: 'commented on your post',
       })
       if (notifError) {
-        
+        // Optionally handle notification error
       }
     }
 
@@ -125,7 +145,7 @@ export default function PostPage() {
             <AlertCircle size={32} className="text-red-400" />
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">Post Not Found</h3>
-          <p className="text-gray-400 mb-4">This post may have been deleted or doesn't exist.</p>
+          <p className="text-gray-400 mb-4">This post may have been deleted or doesn&apos;t exist.</p>
           <Link href="/feed" className="btn">
             Back to Feed
           </Link>
@@ -179,7 +199,7 @@ export default function PostPage() {
               
               <div className="flex items-center space-x-2 text-sm text-gray-400 mb-4">
                 <Calendar size={14} />
-                <span>{formatDate(post.created_at)}</span>
+                <span>{formatDate(post.created_at || '')}</span>
               </div>
 
               <div className="text-white text-lg leading-relaxed mb-4">

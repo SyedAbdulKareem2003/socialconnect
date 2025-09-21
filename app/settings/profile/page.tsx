@@ -6,11 +6,30 @@ import ProfileForm from '@/components/ProfileForm'
 import PostCard from '@/components/PostCard'
 import { User, Users, Heart, FileText, Edit, Trash2, Save, X, Settings, Grid, Loader2, MapPin } from 'lucide-react'
 
+type ProfileType = {
+  id: string
+  username: string
+  bio?: string
+  avatar_url?: string
+  location?: string
+  [key: string]: any
+}
+
+type PostType = {
+  id: string
+  author_id: string
+  content: string
+  image_url?: string
+  category?: string
+  created_at?: string
+  [key: string]: any
+}
+
 export default function ProfileSettingsPage() {
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<ProfileType | null>(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<PostType[]>([])
   const [stats, setStats] = useState({ followers: 0, following: 0, posts: 0 })
 
   async function fetchProfileAndPosts() {
@@ -60,14 +79,14 @@ export default function ProfileSettingsPage() {
   }
 
   // For editing posts (optional, simple version)
-  const [editingPost, setEditingPost] = useState<any>(null)
+  const [editingPost, setEditingPost] = useState<PostType | null>(null)
   const [editContent, setEditContent] = useState('')
   const [editCategory, setEditCategory] = useState('general')
 
-  function startEditPost(post: any) {
+  function startEditPost(post: PostType) {
     setEditingPost(post)
     setEditContent(post.content)
-    setEditCategory(post.category)
+   setEditCategory(post.category || 'general')
   }
 
   async function handleEditPost(e: React.FormEvent) {

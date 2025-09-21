@@ -5,14 +5,28 @@ import { supabase } from '@/lib/supabase'
 import { FileText, Trash2, User, Calendar, Loader2, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
+// Define a proper type instead of `any`
+type Post = {
+  id: string
+  author_id: string
+  content: string
+  created_at: string
+  profiles?: {
+    username?: string
+  }
+}
+
 export default function AdminPostsPage() {
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchPosts() {
-      const { data } = await supabase.from('posts').select('*, profiles:author_id(username)').order('created_at', { ascending: false })
-      setPosts(data || [])
+      const { data } = await supabase
+        .from('posts')
+        .select('*, profiles:author_id(username)')
+        .order('created_at', { ascending: false })
+      setPosts((data as Post[]) || [])
       setLoading(false)
     }
     fetchPosts()
@@ -63,7 +77,10 @@ export default function AdminPostsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link href="/admin" className="p-2 bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300">
+            <Link
+              href="/admin"
+              className="p-2 bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
+            >
               <ArrowLeft size={20} className="text-gray-400 hover:text-white" />
             </Link>
             <div className="p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg">
@@ -78,7 +95,9 @@ export default function AdminPostsPage() {
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-white">{posts.length}</div>
-            <div className="text-sm text-gray-400 uppercase tracking-wider font-medium">Total Posts</div>
+            <div className="text-sm text-gray-400 uppercase tracking-wider font-medium">
+              Total Posts
+            </div>
           </div>
         </div>
 
@@ -94,7 +113,10 @@ export default function AdminPostsPage() {
             </div>
           ) : (
             posts.map(post => (
-              <div key={post.id} className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl shadow-black/20 group hover:bg-black/30 transition-all duration-300">
+              <div
+                key={post.id}
+                className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl shadow-black/20 group hover:bg-black/30 transition-all duration-300"
+              >
                 <div className="flex items-start justify-between">
                   {/* Post Content */}
                   <div className="flex-1 min-w-0">
@@ -112,11 +134,9 @@ export default function AdminPostsPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="bg-black/30 backdrop-blur-sm border border-white/10 rounded-2xl p-4 mb-4">
-                      <p className="text-white leading-relaxed break-words">
-                        {post.content}
-                      </p>
+                      <p className="text-white leading-relaxed break-words">{post.content}</p>
                     </div>
 
                     {/* Post Stats */}
@@ -129,7 +149,7 @@ export default function AdminPostsPage() {
 
                   {/* Actions */}
                   <div className="flex flex-col space-y-2 ml-6">
-                    <button 
+                    <button
                       onClick={() => handleDelete(post.id)}
                       className="flex items-center space-x-2 px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-300 transition-all duration-300 group/btn"
                     >
@@ -150,7 +170,7 @@ export default function AdminPostsPage() {
               <FileText size={20} className="text-purple-400" />
               <span>Post Statistics</span>
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
               <div className="group cursor-pointer">
                 <div className="text-2xl font-bold text-white group-hover:text-purple-400 transition-colors duration-300">
@@ -160,7 +180,7 @@ export default function AdminPostsPage() {
                   Total Posts
                 </div>
               </div>
-              
+
               <div className="group cursor-pointer">
                 <div className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors duration-300">
                   {new Set(posts.map(p => p.author_id)).size}
@@ -169,10 +189,15 @@ export default function AdminPostsPage() {
                   Unique Authors
                 </div>
               </div>
-              
+
               <div className="group cursor-pointer">
                 <div className="text-2xl font-bold text-white group-hover:text-green-400 transition-colors duration-300">
-                  {posts.length > 0 ? Math.round(posts.reduce((acc, post) => acc + post.content.length, 0) / posts.length) : 0}
+                  {posts.length > 0
+                    ? Math.round(
+                        posts.reduce((acc, post) => acc + post.content.length, 0) /
+                          posts.length
+                      )
+                    : 0}
                 </div>
                 <div className="text-xs text-gray-400 uppercase tracking-wider font-medium">
                   Avg Characters
