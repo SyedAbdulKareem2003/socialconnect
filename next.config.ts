@@ -2,14 +2,14 @@
 const nextConfig = {
   images: {
     domains: [
-      'tjvpexdouscdsigiyccv.supabase.co', // ✅ Supabase hostname
+      'tjvpexdouscdsigiyccv.supabase.co', // ✅ your Supabase hostname
     ],
   },
   eslint: {
-    ignoreDuringBuilds: true, // ✅ let Vercel build even if ESLint finds errors
+    ignoreDuringBuilds: true, // ✅ ignore ESLint errors on Vercel
   },
   typescript: {
-    ignoreBuildErrors: true, // ✅ let Vercel build even if TS finds errors
+    ignoreBuildErrors: true, // ✅ ignore TypeScript errors on Vercel
   },
 };
 
