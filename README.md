@@ -3,6 +3,9 @@
 A modern, Instagram-style social media web app built with **Next.js**, **Supabase**, and **Tailwind CSS**.  
 Share moments, connect with people, and explore a vibrant community — all in real-time.
 
+<p align="center">
+  <a href="https://socialconnect-bptg.vercel.app/login"><strong>View Live Deployed Website »</strong></a>
+</p>
 ---
 
 ## 🚀 Features
